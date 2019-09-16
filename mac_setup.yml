@@ -1,0 +1,53 @@
+---
+- hosts: self
+  become: false
+  tasks:
+    - name: Install homebrew taps
+      homebrew_tap: name={{item}} state=present
+      with_items:
+        - caskroom/versions
+
+    - name: Install homebrew casks
+      homebrew_cask: name={{item}} state=present
+      with_items:
+        - firefox
+        - vagrant
+        - virtualbox
+        - slack
+        - google-chrome
+        - spotify
+        - dropbox
+        - sublime-text
+        - slack
+        - beyond-compare
+        - shiftit
+
+    - name: Install homebrew
+      homebrew: name={{item}} state=present
+      with_items:
+        - ruby
+        - packer
+        - mas
+
+    - name: Install Ruby Gems
+      gem: name={{item}} state=present
+      with_items:
+        - cocoapods
+
+    - name: setup cocoapods
+      command: pod setup creates=~/.cocoapods/
+
+    - name: Upgrade outdated apps from the Mac App Store.
+      shell: mas upgrade
+      register: result
+      changed_when: result.stdout.find('Everything is up-to-date') != 0
+
+    - name: Install Mac App Store apps.
+      shell: mas list | grep {{ item }} || mas install {{ item }}
+      with_items:
+        - 992076693 # Mindnode
+        - 937759555 # Elmedia Player
+        - 902111700 # Blogo
+        - 497799835 # Xcode
+      register: result
+      changed_when: result.stdout.find('Installed') != -1

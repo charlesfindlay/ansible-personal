@@ -1,0 +1,6 @@
+---
+- hosts: all
+  tasks:
+    - command: hdiutil attach ~/Downloads/Scrivener.dmg -nobrowse -mountpoint /Volumes/Scrivener
+    - shell: cp -aR /Volumes/Scrivener/Scrivener.app /Applications/Scrivener.app
+    - command: hdiutil detach /Volumes/Scrivener
